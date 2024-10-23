@@ -2,24 +2,25 @@ UNAME_M = $(shell uname -m)
 ARCH=
 ifeq ($(UNAME_M), x86_64)
 	ARCH=amd64
-else
+else ifeq ($(UNAME_M), aarch64)
+	ARCH=arm64
+else 
 	ARCH=$(UNAME_M)
 endif
 
-ORG				?= rancher
-TAG 			?= v1.13.15b4
-GOLANG_VERSION 	?= $(shell echo $(TAG) | sed -e "s/v\(.*\)b.*/\1/g")
-GOBORING_BUILD	?= $(shell echo $(TAG) | sed -e "s/v.*b//g")
+ORG        ?= rancher
+TAG        ?= v1.19.0
+GO_VERSION ?= $(shell echo $(TAG) | sed -e "s/v\(.*\)b.*/\1/g")
 
 .PHONY: image-build
 image-build:
 	docker build \
-		--build-arg GOLANG_VERSION=$(GOLANG_VERSION) \
-		--build-arg GOBORING_BUILD=$(GOBORING_BUILD) \
+		--pull \
+		--build-arg GOLANG_VERSION=$(GO_VERSION) \
 		--tag $(ORG)/hardened-build-base:$(TAG) \
 		--tag $(ORG)/hardened-build-base:$(TAG)-$(ARCH) \
 		. \
-		-f Dockerfile.$(ARCH)
+		-f Dockerfile \
 
 .PHONY: image-push
 image-push:
@@ -32,3 +33,7 @@ image-manifest:
 		$(ORG)/hardened-build-base:$(TAG)-$(ARCH)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push \
 		$(ORG)/hardened-build-base:$(TAG)
+
+.PHONY: go-version
+go-version:
+	@echo $(GO_VERSION)

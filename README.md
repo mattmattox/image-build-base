@@ -4,15 +4,14 @@ This repository holds the Dockerfiles and builds scripts for [rancher/hardened-b
 
 Supported architectures
 
-- [x86_64/amd64](Dockerfile.amd64)
-- [s390x](Dockerfile.s390x)
+- [x86_64/amd64, arm64](Dockerfile)
 
 ## Build
 
 ```sh
-TAG=v1.13.15b4 make
+TAG=v1.20.3b1 make
 ```
 
 ### Versioning
 
-The images built within this repository use the same versioning format as [GoBoring](https://github.com/golang/go/tree/dev.boringcrypto/misc/boring#version-strings), using the `<Go version>b<BoringCrypto version>` pattern.
+Starting from v1.19.0 dev.boringcrypto branch has been moved to the main branch behind GOEXPERIMENT variable, so the image-build-base will be adding `GOEXPERIMENT=boringcrypto` to `scripts/go-build-static.sh` script, however the build will still retain the same versionining using the `<Go version>b<BoringCrypto version>` pattern.
